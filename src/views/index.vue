@@ -1,13 +1,17 @@
 <template>
-  <div>
-    index
+  <div class="index">
+    <service-bar></service-bar>
   </div>
 </template>
 
 <script>
+// @ is an alias to /src
+
+import ServiceBar from "@/components/ServiceBar";
 export default {
-  name: 'index'
+  name: "index",
+  components: {
+    ServiceBar
+  }
 };
 </script>
-
-<style lang="scss" scoped></style>
