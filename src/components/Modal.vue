@@ -42,7 +42,7 @@ export default {
       default: "form"
     },
     title: String,
-    btnType: String,
+    btnType: Number,
     sureText: {
       type: String,
       default: "确定"
