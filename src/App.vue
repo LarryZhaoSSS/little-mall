@@ -4,10 +4,20 @@
   </div>
 </template>
 <script>
-import Storage from "./storage/index";
 export default {
   mounted() {
-    Storage.setItem("a", 1);
+    this.getUser();
+  },
+  methods: {
+    getUser() {
+      this.axios.get("/user").then(res => {
+        // todo use vuex
+        console.log(res);
+      });
+    },
+    getCartCount() {
+      this.axios.get("/carts/products/count").then(() => {});
+    }
   }
 };
 </script>
@@ -15,4 +25,5 @@ export default {
 @import "./assets/scss/reset.scss";
 @import "./assets/scss/button.scss";
 @import "./assets/scss/modal.scss";
+@import "./assets/scss/base.scss";
 </style>
