@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-bar">
+  <div class="nav-bar" :class="{'isFixed':isFixed}">
     <div class="container">
       <div class="pro-title">小米8</div>
       <div class="pro-param">
@@ -16,7 +16,27 @@
 
 <script>
 export default {
-  name: "nav-bar"
+  name: "nav-bar",
+  data() {
+    return {
+      isFixed: false
+    };
+  },
+  mounted() {
+    window.addEventListener("scroll", this.initHeight);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.initHeight, false);
+  },
+  methods: {
+    initHeight() {
+      let scrollTop =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop;
+      this.isFixed = scrollTop > 160 ? true : false;
+    }
+  }
 };
 </script>
 
@@ -26,7 +46,14 @@ export default {
 .nav-bar {
   height: 70px;
   line-height: 70px;
-  border: 1px solid #e5e5e5;
+  border-top: 1px solid #e5e5e5;
+  background-color: $colorG;
+  &.isFixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    box-shadow: 0 2px 2px lighten($colorE, 30%);
+  }
   .container {
     display: flex;
     justify-content: space-between;
@@ -38,12 +65,11 @@ export default {
     .pro-param {
       font-size: $fontJ;
       color: $colorC;
-      span{
-        margin:0 10px;
+      span {
+        margin: 0 10px;
       }
-      a{
-        color:$colorC;
-        
+      a {
+        color: $colorC;
       }
     }
   }
