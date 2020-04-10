@@ -100,7 +100,9 @@ export default {
     };
   },
   methods: {
-    closeVideo() {}
+    closeVideo() {
+      this.showSlide = "slideUp";
+    }
   }
 };
 </script>
