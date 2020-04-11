@@ -229,15 +229,18 @@ export default {
         });
     },
     addCart(id) {
-      // this.axios
-      //   .post("/carts", {
-      //     productId: id,
-      //     selected: true
-      //   })
-      //   .then(() => {})
-      //   .catch(() => {
-      //     this.showModal = true;
-      //   });
+      this.axios
+        .post("/carts", {
+          productId: id,
+          selected: true
+        })
+        .then(res => {
+          this.showModal = true;
+          this.$store.dispatch("saveCartCount", res.cartTotalQuantity);
+        })
+        .catch(() => {
+          this.showModal = true;
+        });
       console.log(id);
       this.showModal = true;
     },

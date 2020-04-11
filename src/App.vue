@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     getUser() {
-      this.axios.get("/user").then(res => {
+      this.axios.get("/user").then((res = {}) => {
         // todo use vuex
         console.log(res);
         this.$store.dispatch("saveUserName", res.username);
