@@ -6,6 +6,9 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import VueLazyLoad from 'vue-lazyload';
 import VueCookie from 'vue-cookie';
+import { Message } from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
 axios.defaults.baseURL = '/api';
 axios.defaults.timeout = 8000;
 axios.interceptors.response.use(
@@ -24,21 +27,23 @@ axios.interceptors.response.use(
       return Promise.reject(res);
     }
   },
-  (error) => {
+  error => {
     let res = error.response;
-    window.alert(res.data.message);
+    Message.error(res.data.message);
     return Promise.reject(error);
   }
 );
+Vue.prototype.$message = Message;
+
 Vue.use(VueAxios, axios);
 Vue.use(VueCookie);
 Vue.use(VueLazyLoad, {
-  loading: '/imgs/loading-svg/loading-bars.svg',
+  loading: '/imgs/loading-svg/loading-bars.svg'
 });
 Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
-  render: (h) => h(App),
+  render: h => h(App)
 }).$mount('#app');

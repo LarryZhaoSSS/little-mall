@@ -10,7 +10,12 @@
         <div class="cart-box">
           <ul class="cart-item-head">
             <li class="col-1">
-              <span class="checkbox" v-bind:class="{'checked':allChecked}" @click="toggleAll"></span>全选
+              <span
+                class="checkbox"
+                v-bind:class="{ checked: allChecked }"
+                @click="toggleAll"
+              ></span
+              >全选
             </li>
             <li class="col-3">商品名称</li>
             <li class="col-1">单价</li>
@@ -19,27 +24,33 @@
             <li class="col-1">操作</li>
           </ul>
           <ul class="cart-item-list">
-            <li class="cart-item" v-for="(item,index) in list" v-bind:key="index">
+            <li
+              class="cart-item"
+              v-for="(item, index) in list"
+              v-bind:key="index"
+            >
               <div class="item-check">
                 <span
                   class="checkbox"
-                  v-bind:class="{'checked':item.productSelected}"
+                  v-bind:class="{ checked: item.productSelected }"
                   @click="updateCart(item)"
                 ></span>
               </div>
               <div class="item-name">
                 <img v-lazy="item.productMainImage" alt />
-                <span>{{item.productName + ' , ' + item.productSubtitle}}</span>
+                <span>{{
+                  item.productName + ' , ' + item.productSubtitle
+                }}</span>
               </div>
-              <div class="item-price">{{item.productPrice}}</div>
+              <div class="item-price">{{ item.productPrice }}</div>
               <div class="item-num">
                 <div class="num-box">
-                  <a href="javascript:;" @click="updateCart(item,'-')">-</a>
-                  <span>{{item.quantity}}</span>
-                  <a href="javascript:;" @click="updateCart(item,'+')">+</a>
+                  <a href="javascript:;" @click="updateCart(item, '-')">-</a>
+                  <span>{{ item.quantity }}</span>
+                  <a href="javascript:;" @click="updateCart(item, '+')">+</a>
                 </div>
               </div>
-              <div class="item-total">{{item.productTotalPrice}}</div>
+              <div class="item-total">{{ item.productTotalPrice }}</div>
               <div class="item-del" @click="delProduct(item)"></div>
             </li>
           </ul>
@@ -48,12 +59,14 @@
           <div class="cart-tip fl">
             <a href="/#/index">继续购物</a>
             共
-            <span>{{list.length}}</span>件商品，已选择
-            <span>{{checkedNum}}</span>件
+            <span>{{ list.length }}</span
+            >件商品，已选择 <span>{{ checkedNum }}</span
+            >件
           </div>
           <div class="total fr">
             合计：
-            <span>{{cartTotalPrice}}</span>元
+            <span>{{ cartTotalPrice }}</span
+            >元
             <a href="javascript:;" class="btn" @click="order">去结算</a>
           </div>
         </div>
@@ -64,11 +77,12 @@
   </div>
 </template>
 <script>
-import OrderHeader from "./../components/OrderHeader";
-import ServiceBar from "./../components/ServiceBar";
-import NavFooter from "./../components/NavFooter";
+import OrderHeader from './../components/OrderHeader';
+import ServiceBar from './../components/ServiceBar';
+import NavFooter from './../components/NavFooter';
+
 export default {
-  name: "index",
+  name: 'index',
   components: {
     OrderHeader,
     ServiceBar,
@@ -88,7 +102,7 @@ export default {
   methods: {
     // 获取购物车列表
     getCartList() {
-      this.axios.get("/carts").then(res => {
+      this.axios.get('/carts').then(res => {
         this.renderData(res);
       });
     },
@@ -96,15 +110,15 @@ export default {
     updateCart(item, type) {
       let quantity = item.quantity,
         selected = item.productSelected;
-      if (type == "-") {
+      if (type == '-') {
         if (quantity == 1) {
-          this.$message.warning("商品至少保留一件");
+          this.$message.warning('商品至少保留一件');
           return;
         }
         --quantity;
-      } else if (type == "+") {
+      } else if (type == '+') {
         if (quantity > item.productStock) {
-          this.$message.warning("购买数量不能超过库存数量");
+          this.$message.warning('购买数量不能超过库存数量');
           return;
         }
         ++quantity;
@@ -123,13 +137,13 @@ export default {
     // 删除购物车商品
     delProduct(item) {
       this.axios.delete(`/carts/${item.productId}`).then(res => {
-        this.$message.success("删除成功");
+        this.$message.success('删除成功');
         this.renderData(res);
       });
     },
     // 控制全选功能
     toggleAll() {
-      let url = this.allChecked ? "/carts/unSelectAll" : "/carts/selectAll";
+      let url = this.allChecked ? '/carts/unSelectAll' : '/carts/selectAll';
       this.axios.put(url).then(res => {
         this.renderData(res);
       });
@@ -145,9 +159,9 @@ export default {
     order() {
       let isCheck = this.list.every(item => !item.productSelected);
       if (isCheck) {
-        this.$message.warning("请选择一件商品");
+        this.$message.warning('请选择一件商品');
       } else {
-        this.$router.push("/order/confirm");
+        this.$router.push('/order/confirm');
       }
     }
   }
@@ -173,7 +187,7 @@ export default {
         margin-right: 17px;
         cursor: pointer;
         &.checked {
-          background: url("/imgs/icon-gou.png") #ff6600 no-repeat center;
+          background: url('/imgs/icon-gou.png') #ff6600 no-repeat center;
           background-size: 16px 12px;
           border: none;
         }
@@ -250,7 +264,7 @@ export default {
             flex: 1;
             width: 14px;
             height: 12px;
-            background: url("/imgs/icon-close.png") no-repeat center;
+            background: url('/imgs/icon-close.png') no-repeat center;
             background-size: contain;
             cursor: pointer;
           }

@@ -9,13 +9,13 @@
           <a href="javascript:;">协议规则</a>
         </div>
         <div class="topbar-user">
-          <a href="javascript:;" v-if="username">{{username}}</a>
+          <a href="javascript:;" v-if="username">{{ username }}</a>
           <a href="javascript:;" v-if="!username" @click="login">登录</a>
           <a href="javascript:;" v-if="username" @click="logout">退出</a>
           <a href="/#/order/list" v-if="username">我的订单</a>
           <a href="javascript:;" class="my-cart" @click="goToCart">
             <span class="icon-cart"></span>
-            购物车 {{cartCount}}
+            购物车 {{ cartCount }}
           </a>
         </div>
       </div>
@@ -30,7 +30,11 @@
             <span>小米手机</span>
             <div class="children">
               <ul>
-                <li class="product" v-for="(item,index) of phoneList" :key="index">
+                <li
+                  class="product"
+                  v-for="(item, index) of phoneList"
+                  :key="index"
+                >
                   <a :href="`/#/product/${item.id}`" target="_blank">
                     <div class="pro-img">
                       <img :src="item.mainImage" :alt="item.subTitle" />
@@ -71,7 +75,7 @@
 </template>
 <script>
 export default {
-  name: "nav-header",
+  name: 'nav-header',
   computed: {
     username() {
       return this.$store.state.username;
@@ -88,9 +92,9 @@ export default {
   filters: {
     currency(val) {
       if (!val) {
-        return "0.00";
+        return '0.00';
       }
-      return "$" + (val / 7.09).toFixed(2);
+      return '$' + (val / 7.09).toFixed(2);
     }
   },
   mounted() {
@@ -98,14 +102,21 @@ export default {
   },
   methods: {
     login() {
-      this.$router.push("/login");
+      this.$router.push('/login');
     },
-    logout() {},
+    logout() {
+      this.axios.post('user/logout').then(() => {
+        this.$message.success('退出成功');
+        this.$cookie.set('userId', '', { expires: '-1' });
+        this.$store.dispatch('saveUserName', '');
+        this.$store.dispatch('saveCartCount', 0);
+      });
+    },
     getProductList() {
       this.axios
-        .get("/products", {
+        .get('/products', {
           params: {
-            categoryId: "100012"
+            categoryId: '100012'
           }
         })
         .then(res => {
@@ -116,15 +127,15 @@ export default {
         });
     },
     goToCart() {
-      this.$router.push("/cart");
+      this.$router.push('/cart');
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-@import "../assets/scss/base.scss";
-@import "../assets/scss/mixin.scss";
-@import "../assets/scss/config.scss";
+@import '../assets/scss/base.scss';
+@import '../assets/scss/mixin.scss';
+@import '../assets/scss/config.scss';
 
 .header {
   .nav-topbar {
@@ -148,7 +159,7 @@ export default {
         color: #fff;
         margin-right: 0;
         .icon-cart {
-          @include bgImg(16px, 12px, "/imgs/icon-cart-checked.png");
+          @include bgImg(16px, 12px, '/imgs/icon-cart-checked.png');
           margin-right: 4px;
         }
       }
@@ -171,13 +182,13 @@ export default {
           width: 110px;
           height: 55px;
           &:before {
-            content: "";
-            @include bgImg(55px, 55px, "/imgs/mi-logo.png");
+            content: '';
+            @include bgImg(55px, 55px, '/imgs/mi-logo.png');
             transition: margin 0.2s;
           }
           &:after {
-            @include bgImg(55px, 55px, "/imgs/mi-home.png");
-            content: "";
+            @include bgImg(55px, 55px, '/imgs/mi-home.png');
+            content: '';
           }
           &:hover:before {
             margin-left: -55px;
@@ -252,7 +263,7 @@ export default {
                 color: $colorA;
               }
               &:before {
-                content: "";
+                content: '';
                 position: absolute;
                 top: 28px;
                 right: 0;
@@ -282,7 +293,7 @@ export default {
             padding-left: 14px;
           }
           a {
-            @include bgImg(18px, 18px, "/imgs/icon-search.png");
+            @include bgImg(18px, 18px, '/imgs/icon-search.png');
             margin-left: 17px;
           }
         }
