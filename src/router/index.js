@@ -44,7 +44,12 @@ const routes = [
         component: () => import('@/views/orderPay')
       },
       {
-        path: 'comfirm',
+        path: 'alipay',
+        name: 'ali-pay',
+        component: () => import('@/views/alipay')
+      },
+      {
+        path: 'confirm',
         name: 'order-confirm',
         component: () => import('@/views/orderConfirm')
       }
