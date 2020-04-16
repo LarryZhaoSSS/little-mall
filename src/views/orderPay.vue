@@ -16,16 +16,17 @@
                 请在
                 <span>30分</span>内完成支付, 超时后将取消订单
               </p>
-              <p>收货信息：{{addressInfo}}</p>
+              <p>收货信息：{{ addressInfo }}</p>
             </div>
             <div class="order-total">
               <p>
                 应付总额：
-                <span>{{payment}}</span>元
+                <span>{{ payment }}</span
+                >元
               </p>
               <p>
                 订单详情
-                <em class="icon-down up" @click="showDetail=!showDetail"></em>
+                <em class="icon-down up" @click="showDetail = !showDetail"></em>
               </p>
             </div>
           </div>
@@ -36,15 +37,17 @@
             </div>
             <div class="item">
               <div class="detail-title">收货信息：</div>
-              <div class="detail-info">Admin 183****0972 北京 北京市 朝阳区 望京街道 望京(地铁站)</div>
+              <div class="detail-info">
+                Admin 183****0972 北京 北京市 朝阳区 望京街道 望京(地铁站)
+              </div>
             </div>
             <div class="item good">
               <div class="detail-title">商品名称：</div>
               <div class="detail-info">
                 <ul>
-                  <li v-for="(item,index) in orderDetail" :key="index">
+                  <li v-for="(item, index) in orderDetail" :key="index">
                     <img v-lazy="item.productImage" />
-                    {{item.productName}}
+                    {{ item.productName }}
                   </li>
                   <li>
                     <img
@@ -71,32 +74,67 @@
           <h3>选择以下支付方式付款</h3>
           <div class="pay-way">
             <p>支付平台</p>
-            <div class="pay pay-ali" :class="{'checked':payType===1}" @click="paySubmit(1)"></div>
-            <div class="pay pay-wechat" :class="{'checked':payType===2}" @click="paySubmit(2)"></div>
+            <div
+              class="pay pay-ali"
+              :class="{ checked: payType === 1 }"
+              @click="paySubmit(1)"
+            ></div>
+            <div
+              class="pay pay-wechat"
+              :class="{ checked: payType === 2 }"
+              @click="paySubmit(2)"
+            ></div>
           </div>
         </div>
       </div>
     </div>
+    <scan-pay-code
+      v-if="showPay"
+      @close="closePayModal"
+      :img="payImg"
+    ></scan-pay-code>
+    <modal
+      title="支付确认"
+      :btnType="3"
+      :showModal="showPayModal"
+      sureText="查看订单"
+      cancelText="未支付"
+      @cancel="showPayModal = false"
+      @submit="goOrderList"
+    >
+      <template v-slot:body>
+        <p>您确认是否完成支付？</p>
+      </template>
+    </modal>
   </div>
 </template>
 <script>
-import OrderHeader from "./../components/OrderHeader";
+import OrderHeader from './../components/OrderHeader';
+import QRCode from 'qrcode';
+import ScanPayCode from './../components/ScanPayCode';
+import Modal from './../components/Modal';
+
 export default {
-  name: "order-pay",
+  name: 'order-pay',
   data() {
     return {
       orderId: this.$route.query.orderNo,
-      addressInfo: "",
-      payment: "",
+      addressInfo: '',
+      payment: '',
       orderDetail: [],
       showDetail: false, //是否显示订单详情
       showPay: false, //是否显示微信支付弹框
-      payType: ""
+      payType: '',
+      showPayModal: false, //是否显示二次支付确认弹框
+      payImg: '', //微信支付的二维码地址
+      T: '', //定时器ID
     };
   },
 
   components: {
-    OrderHeader
+    OrderHeader,
+    ScanPayCode,
+    Modal,
   },
   mounted() {
     this.getOrderDetail();
@@ -105,11 +143,41 @@ export default {
     paySubmit(payType) {
       this.payType = payType;
       if (payType == 1) {
-        window.open("/#/order/alipay?orderId=" + this.orderId, "_blank");
+        window.open('/#/order/alipay?orderId=' + this.orderId, '_blank');
+      } else {
+        this.axios
+          .post('/pay', {
+            orderId: this.orderId,
+            orderName: 'Vue高仿小米商城',
+            amount: 0.01, //单位元
+            payType: 2, //1支付宝，2微信
+          })
+          .then((res) => {
+            QRCode.toDataURL(res.content)
+              .then((url) => {
+                this.showPay = true;
+                this.payImg = url;
+                this.loopOrderState();
+              })
+              .catch(() => {
+                this.$message.error('微信二维码生成失败，请稍后重试');
+              });
+            console.log(res);
+          });
       }
     },
+    loopOrderState() {
+      this.T = setInterval(() => {
+        this.axios.get(`/orders/${this.orderId}`).then((res) => {
+          if (res.status == 20) {
+            clearInterval(this.T);
+            this.goOrderList();
+          }
+        });
+      }, 1000);
+    },
     getOrderDetail() {
-      this.axios.get(`/orders/${this.orderId}`).then(res => {
+      this.axios.get(`/orders/${this.orderId}`).then((res) => {
         let item = res.shippingVo;
         this.addressInfo = `${item.receiverName} ${item.receiverMobile} ${item.receiverProvince} ${item.receiverCity} ${item.receiverDistrict} ${item.receiverAddress}`;
         this.orderDetail = res.orderItemVoList;
@@ -123,9 +191,9 @@ export default {
       clearInterval(this.T);
     },
     goOrderList() {
-      this.$router.push("/order/list");
-    }
-  }
+      this.$router.push('/order/list');
+    },
+  },
 };
 </script>
 <style lang="scss">
@@ -146,7 +214,7 @@ export default {
           width: 90px;
           height: 90px;
           border-radius: 50%;
-          background: url("/imgs/icon-gou.png") #80c58a no-repeat center;
+          background: url('/imgs/icon-gou.png') #80c58a no-repeat center;
           background-size: 60px;
           margin-right: 40px;
         }
@@ -176,7 +244,7 @@ export default {
             display: inline-block;
             width: 14px;
             height: 10px;
-            background: url("/imgs/icon-down.png") no-repeat center;
+            background: url('/imgs/icon-down.png') no-repeat center;
             background-size: contain;
             margin-left: 9px;
             transition: all 0.5s;
@@ -240,12 +308,12 @@ export default {
           }
         }
         .pay-ali {
-          background: url("/imgs/pay/icon-ali.png") no-repeat center;
+          background: url('/imgs/pay/icon-ali.png') no-repeat center;
           background-size: 103px 38px;
           margin-top: 19px;
         }
         .pay-wechat {
-          background: url("/imgs/pay/icon-wechat.png") no-repeat center;
+          background: url('/imgs/pay/icon-wechat.png') no-repeat center;
           background-size: 103px 38px;
         }
       }
